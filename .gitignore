@@ -1,0 +1,12 @@
+# Build results
+obj/
+bin/
+build/
+
+# Secret stuff smh
+.env
+.db
+
+# This keeps bothering me
+.vscode/
+.vs/
