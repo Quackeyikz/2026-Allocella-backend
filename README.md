@@ -42,6 +42,10 @@ This repository contains the **back-end** program of the Allocella app.
     ```bash
     dotnet ef database update
     ```
+8. [BCrypt.Net](https://www.nuget.org/packages/BCrypt.Net-Next/) for Password Hashing
+    ```bash
+    dotnet add package BCrypt.Net-Next
+    ```
 
 ### Migrations Commands (For Note)
 **Generate a new migration**
