@@ -12,6 +12,11 @@ public class User
     [MaxLength(255)]
     public string Email { get; set; } = string.Empty;
 
+    [Required]
+    [MaxLength(50)]
+
+    public string FullName { get; set; } = string.Empty;
+
     // Hashed password, for more security.
     // We DO NOT want to store original pass in database >:u ~ @Quackeyikz
     // WHy string empty? To prevent null erros, my IDE yells at me that it shouldnt be null when exiting constructor,
