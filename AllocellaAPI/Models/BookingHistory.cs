@@ -21,7 +21,7 @@ public class BookingHistory
     [MaxLength(50)]
     public string NewStatus { get; set; } = string.Empty;
 
-    public int? ChangedByUsedId { get; set; }
+    public int? ChangedByUserId { get; set; }
 
     [ForeignKey("ChangedByUserId")]
     public User? ChangedBy { get; set; }

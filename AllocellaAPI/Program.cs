@@ -5,9 +5,29 @@
     To help understanding the purpose of the main program,
     Each line (the commented) will have it's basic explanation.
 */
+using AllocellaAPI.Data;
+using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
+
+// Configure your .env ENV First for it to be loaded!
+Env.Load();
 
 // Basically creates the app
 var builder = WebApplication.CreateBuilder(args);
+
+// Connection string from env (basically taking its values)
+var connectionString = 
+    $"Host={Environment.GetEnvironmentVariable("DB_HOST")};" +
+    $"Port={Environment.GetEnvironmentVariable("DB_PORT")};" +
+    $"Database={Environment.GetEnvironmentVariable("DB_NAME")};" +
+    $"Username={Environment.GetEnvironmentVariable("DB_USER")};" +
+    $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};";
+
+
+// Telling ASP.NET to use the DbContext
+builder.Services.AddDbContext<AllocellaDbContext>(options =>
+    options.UseNpgsql(connectionString));
+    // options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Enable the API controllers (Depedency injection)
 builder.Services.AddControllers();
