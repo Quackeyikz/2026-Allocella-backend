@@ -49,5 +49,10 @@ public class AllocellaDbContext : DbContext
         {
             entity.HasOne(h => h.ChangedBy).WithMany().HasForeignKey(h => h.ChangedByUserId).OnDelete(DeleteBehavior.SetNull);
         });
+
+        // Data Seeding
+        Seeds.UserSeeder.SeedUsers(modelBuilder);
+        Seeds.RoomSeeder.SeedRooms(modelBuilder);
+        Seeds.BookingSeeder.SeedBookings(modelBuilder);
     }
 }
