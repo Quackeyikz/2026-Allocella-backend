@@ -8,6 +8,7 @@
 using AllocellaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
+using AllocellaAPI.Services.Auth;
 
 // Configure your .env ENV First for it to be loaded!
 Env.Load();
@@ -28,6 +29,9 @@ var connectionString =
 builder.Services.AddDbContext<AllocellaDbContext>(options =>
     options.UseNpgsql(connectionString));
     // options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registering AuthService - yes, THE "AuthService"
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Enable the API controllers (Depedency injection)
 builder.Services.AddControllers();
