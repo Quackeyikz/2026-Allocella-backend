@@ -54,6 +54,10 @@ This repository contains the **back-end** program of the Allocella app.
     ```bash
     dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.0
     ```
+10. OpenApi Package (A bit late, but better than never)
+    ```bash
+    dotnet add package Microsoft.OpenApi --version 1.6.14
+    ```
 
 ### Migrations Commands (For Note)
 **Generate a new migration**

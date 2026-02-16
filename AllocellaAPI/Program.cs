@@ -23,7 +23,7 @@ Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Connection string from env (basically taking its values)
-var connectionString = 
+var connectionString =
     $"Host={Environment.GetEnvironmentVariable("DB_HOST")};" +
     $"Port={Environment.GetEnvironmentVariable("DB_PORT")};" +
     $"Database={Environment.GetEnvironmentVariable("DB_NAME")};" +
@@ -34,7 +34,7 @@ var connectionString =
 // Telling ASP.NET to use the DbContext
 builder.Services.AddDbContext<AllocellaDbContext>(options =>
     options.UseNpgsql(connectionString));
-    // options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registering AuthService - yes, THE "AuthService"
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -140,6 +140,20 @@ You will get this token after logging in via POST /api/auth/login"
     // options.IncludeXmlComments(xmlPath);
 });
 
+// The authorization literally cannot work without this
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",      // Vite dev server
+                "http://localhost:3000"       // Alternative React dev server
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
@@ -153,7 +167,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFrontend");
+
 // Enables auth middleware
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Maps API routes (for routing)
