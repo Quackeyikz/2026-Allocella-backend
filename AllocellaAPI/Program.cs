@@ -5,14 +5,16 @@
     To help understanding the purpose of the main program,
     Each line (the commented) will have it's basic explanation.
 */
-using AllocellaAPI.Data;
-using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
-using AllocellaAPI.Services.Auth;
-using AllocellaAPI.Services.Bookings;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
+using Microsoft.OpenApi.Models;
+using AllocellaAPI.Services.Bookings;
+using AllocellaAPI.Services.Rooms;
+using AllocellaAPI.Services.Auth;
+using AllocellaAPI.Data;
 
 // Configure your .env ENV First for it to be loaded!
 Env.Load();
@@ -39,6 +41,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Booking servicce
 builder.Services.AddScoped<IBookingService, BookingService>();
+
+// Room Service
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 // JWT
 var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new InvalidOperationException("JWT_SECRET not configured");
@@ -75,7 +80,65 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 // Adds Swagger documentation (API docs)
-builder.Services.AddSwaggerGen();
+// builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    // API Information
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Allocella API",
+        Description = "Room booking management system for universities - RESTful API with JWT authentication",
+        Contact = new OpenApiContact
+        {
+            Name = "Allocella Development Team",
+            Url = new Uri("https://github.com/Quackeyikz/2026-Allocella-backend")
+        },
+        License = new OpenApiLicense
+        {
+            Name = "MIT License",
+            Url = new Uri("https://opensource.org/licenses/MIT")
+        }
+    });
+
+    // JWT Authentication Configuration for Swagger
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = @"JWT Authorization header using the Bearer scheme. 
+                      
+Enter your JWT token in the text input below.
+
+Example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+
+You will get this token after logging in via POST /api/auth/login"
+    });
+
+    // Make Swagger use JWT authentication
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+
+    // Optional: Enable XML comments (for better documentation)
+    // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    // options.IncludeXmlComments(xmlPath);
+});
 
 
 var app = builder.Build();
