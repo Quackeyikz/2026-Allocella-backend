@@ -9,6 +9,9 @@ using AllocellaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 using AllocellaAPI.Services.Auth;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 
 // Configure your .env ENV First for it to be loaded!
 Env.Load();
@@ -32,6 +35,37 @@ builder.Services.AddDbContext<AllocellaDbContext>(options =>
 
 // Registering AuthService - yes, THE "AuthService"
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// JWT
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new InvalidOperationException("JWT_SECRET not configured");
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "AllocellaAPI";
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "AllocellaClient";
+var jwtExpiryHours = int.Parse(Environment.GetEnvironmentVariable("JWT_EXPIRY_HOURS") ?? "24");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
 
 // Enable the API controllers (Depedency injection)
 builder.Services.AddControllers();
