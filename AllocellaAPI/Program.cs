@@ -9,6 +9,7 @@ using AllocellaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 using AllocellaAPI.Services.Auth;
+using AllocellaAPI.Services.Bookings;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
@@ -35,6 +36,9 @@ builder.Services.AddDbContext<AllocellaDbContext>(options =>
 
 // Registering AuthService - yes, THE "AuthService"
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Booking servicce
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 // JWT
 var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new InvalidOperationException("JWT_SECRET not configured");
@@ -72,6 +76,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 // Adds Swagger documentation (API docs)
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
