@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using AllocellaAPI.DTOs.Auth;
 using AllocellaAPI.Services.Auth;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 /*
       Quackeyikz is here again, of course. Who do you think wrote this code?!
@@ -76,7 +78,49 @@ public class AuthController : ControllerBase
             catch (Exception e)
             {
                   _logger.LogError(e, "Unexpected error during login for {Email}", request.Email);
-                  return StatusCode(500, new { message = "An unexpected error in the system. Please try again later."});
+                  return StatusCode(500, new { message = "An unexpected error in the system. Please try again later." });
             }
+      }
+
+      [HttpGet("me")]
+      [Authorize]
+      public IActionResult GetCurrentUser()
+      {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+            var nameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+            var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                  return Unauthorized(new { message = "Invalid token claims" });
+            }
+
+            var userInfo = new UserInfo
+            {
+                  Id = int.Parse(userIdClaim),
+                  Email = emailClaim ?? "",
+                  FullName = nameClaim ?? "",
+                  Role = roleClaim ?? ""
+            };
+
+            _logger.LogInformation("User {Email} retrieved their profile via JWT", userInfo.Email);
+
+            return Ok(userInfo);
+      }
+
+      [HttpGet("admin")]
+      [Authorize(Roles = "admin")]  // ← Only admins can access!
+      public IActionResult AdminOnly()
+      {
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            _logger.LogInformation("Admin {Name} accessed admin-only endpoint", userName);
+
+            return Ok(new
+            {
+                  message = $"Welcome, admin {userName}! This is a protected area.",
+                  timestamp = DateTime.UtcNow
+            });
       }
 }
