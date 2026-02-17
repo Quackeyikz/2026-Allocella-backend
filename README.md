@@ -15,7 +15,7 @@ _Sorry I didn't document it in Swagger properly using descriptions and summaries
 
 <div style="text-align: center">
 
-![ASP](https://miro.medium.com/v2/1*oPEDLkxFxRbrzSBvDSt72g.png)
+![ASP](https://host4asp.net/wp-content/uploads/2022/09/ASP.NET_.png)
 
 </div>
 
