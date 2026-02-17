@@ -114,51 +114,35 @@ _Sorry I didn't document it in Swagger properly using descriptions and summaries
 ### Migrations Commands (For Note)
 **Generate a new migration**
 
-    ```bash
     dotnet ef migrations add <MigrationName>
-    ```
 
 **Apply all pending migrations**
 
-    ```bash
     dotnet ef database update
-    ```
 
 **Apply migrations up to a specific one**
 
-    ```bash
     dotnet ef database update <MigrationName>
-    ```
 
 **Rollback to previous migration**
 
-    ```bash
     dotnet ef database update <PreviousMigrationName>
-    ```
 
 **Remove last migration (if not applied yet)**
 
-    ```bash
     dotnet ef migrations remove
-    ```
 
 **List all migrations**
 
-    ```bash
     dotnet ef migrations list
-    ```
 
 **Generate SQL script (without applying)**
 
-    ```bash
     dotnet ef migrations script
-    ```
 
 **Drop database (DANGER!)**
 
-    ```bash
     dotnet ef database drop
-    ```
 
 ## Frequently Asked Questions (by myself)
 - Q: How to configure DbConnect, DbSet, and all that?
